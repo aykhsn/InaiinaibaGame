@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>いないいないばあ｜こどもゲーム</title>
+    <link rel="icon" href="rabbit_ba.png">
+    <link rel="apple-touch-icon" href="rabbit_ba.png">
+    <meta name="description" content="いないいないばあ！子供向けゲーム">
+    <meta name="keywords" content="game, ゲーム, いないいないばあ、知育、子供向けゲーム">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color:#f6e174;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // ゲーム設定
+        const config = {
+            type: Phaser.AUTO,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            backgroundColor: '#f6e174',
+            parent: 'phaser-example',
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+
+        // ゲームインスタンスの作成
+        const game = new Phaser.Game(config);
+
+        let rabbit, bear, cat;
+        let tapCounts = { rabbit: 0, bear: 0, cat: 0 };
+        let currentAnimal = 'rabbit';
+        let canTap = true;
+        let animalHeight, animalWidth;
+
+        function preload() {
+            // 画像と音声の読み込み
+            this.load.image('rabbit_inai', 'rabbit_inai.png');
+            this.load.image('rabbit_ba', 'rabbit_ba.png');
+            this.load.image('bear_inai', 'bear_inai.png');
+            this.load.image('bear_ba', 'bear_ba.png');
+            this.load.image('cat_inai', 'cat_inai.png');
+            this.load.image('cat_ba', 'cat_ba.png');
+            this.load.audio('inaiinai', 'inaiinai.mp3');
+            this.load.audio('ba', 'ba.mp3');
+            this.load.audio('shun', 'mokkin.mp3'); // シュンという効果音
+        }
+
+        function create() {
+            const heightRatio = 4 / 5; // 動物の高さの比率を変更
+            animalHeight = this.scale.height * heightRatio;
+            animalWidth = animalHeight * (this.textures.get('rabbit_inai').getSourceImage().width / this.textures.get('rabbit_inai').getSourceImage().height);
+
+            rabbit = createAnimal(this, 'rabbit', 'rabbit_inai');
+            bear = createAnimal(this, 'bear', 'bear_inai');
+            cat = createAnimal(this, 'cat', 'cat_inai');
+
+            // 最初のウサギにもアニメーションを追加
+            rabbit.setScale(0);
+            this.tweens.add({
+                targets: rabbit,
+                scaleX: 1,
+                scaleY: 1,
+                duration: 500,
+                ease: 'Bounce.easeOut'
+            });
+
+            this.scale.on('resize', resize, this);
+        }
+
+        function update() {
+            // ゲームの更新処理
+        }
+
+        function resize(gameSize) {
+            const heightRatio = 4 / 5; // 動物の高さの比率を変更
+            animalHeight = gameSize.height * heightRatio;
+            animalWidth = animalHeight * (this.textures.get('rabbit_inai').getSourceImage().width / this.textures.get('rabbit_inai').getSourceImage().height);
+
+            resizeAnimal(rabbit);
+            resizeAnimal(bear);
+            resizeAnimal(cat);
+        }
+
+        function createAnimal(scene, name, texture) {
+            const animal = scene.add.sprite(scene.cameras.main.centerX, scene.cameras.main.centerY, texture)
+                .setInteractive()
+                .setDisplaySize(animalWidth, animalHeight)
+                .setVisible(name === 'rabbit');
+
+            animal.on('pointerdown', () => {
+                if (canTap) {
+                    handleAnimalClick(name, animal, scene);
+                }
+            });
+
+            return animal;
+        }
+
+        function resizeAnimal(animal) {
+            animal.setDisplaySize(animalWidth, animalHeight);
+            animal.setPosition(animal.scene.cameras.main.centerX, animal.scene.cameras.main.centerY);
+        }
+
+        function handleAnimalClick(name, animal, scene) {
+            tapCounts[name]++;
+            const inaiinaiSound = scene.sound.add('inaiinai');
+            const baSound = scene.sound.add('ba');
+
+            if (tapCounts[name] === 1) {
+                canTap = false;
+                inaiinaiSound.play();
+                inaiinaiSound.on('complete', () => {
+                    canTap = true;
+                });
+            } else if (tapCounts[name] === 2) {
+                canTap = false;
+                animal.setTexture(name + '_ba');
+                baSound.play();
+                baSound.on('complete', () => {
+                    setTimeout(() => {
+                        switchToNextAnimal(name, scene);
+                    }, 2000);
+                });
+            }
+        }
+
+        function switchToNextAnimal(current, scene) {
+            const shunSound = scene.sound.add('shun');
+
+            if (current === 'rabbit') {
+                animateSwitch(rabbit, bear, scene, shunSound);
+                currentAnimal = 'bear';
+            } else if (current === 'bear') {
+                animateSwitch(bear, cat, scene, shunSound);
+                currentAnimal = 'cat';
+            } else if (current === 'cat') {
+                animateSwitch(cat, rabbit, scene, shunSound);
+                rabbit.setTexture('rabbit_inai');
+                tapCounts = { rabbit: 0, bear: 0, cat: 0 };
+                currentAnimal = 'rabbit';
+            }
+        }
+
+        function animateSwitch(currentAnimal, nextAnimal, scene, sound) {
+            scene.tweens.add({
+                targets: currentAnimal,
+                scaleX: 0,
+                scaleY: 0,
+                duration: 200,
+                ease: 'Power2',
+                onComplete: () => {
+                    currentAnimal.setVisible(false);
+                    sound.play();
+                    nextAnimal.setScale(0);
+                    nextAnimal.setDisplaySize(animalWidth, animalHeight); // サイズをリセット
+                    nextAnimal.setVisible(true);
+                    scene.tweens.add({
+                        targets: nextAnimal,
+                        scaleX: 1,
+                        scaleY: 1,
+                        duration: 500,
+                        ease: 'Bounce.easeOut',
+                        onComplete: () => {
+                            canTap = true;
+                        }
+                    });
+                }
+            });
+        }
+
+        window.addEventListener('resize', () => {
+            game.scale.resize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
