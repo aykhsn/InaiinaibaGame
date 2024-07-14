@@ -24,12 +24,11 @@
 </head>
 <body>
     <script>
-        // ゲーム設定
         const config = {
             type: Phaser.AUTO,
             width: window.innerWidth,
             height: window.innerHeight,
-            backgroundColor: '#d9b2f6', // 初期背景色を黄色に設定
+            backgroundColor: '#d9b2f6',
             parent: 'phaser-example',
             scene: {
                 preload: preload,
@@ -38,7 +37,6 @@
             }
         };
 
-        // ゲームインスタンスの作成
         const game = new Phaser.Game(config);
 
         let rabbit, bear, cat;
@@ -46,9 +44,9 @@
         let currentAnimal = 'rabbit';
         let canTap = true;
         let animalHeight, animalWidth;
+        let sparkles = [];
 
         function preload() {
-            // 画像と音声の読み込み
             this.load.image('rabbit_inai', 'rabbit_inai.png');
             this.load.image('rabbit_ba', 'rabbit_ba.png');
             this.load.image('bear_inai', 'bear_inai.png');
@@ -57,11 +55,11 @@
             this.load.image('cat_ba', 'cat_ba.png');
             this.load.audio('inaiinai', 'inaiinai.mp3');
             this.load.audio('ba', 'ba.mp3');
-            this.load.audio('shun', 'mokkin.mp3'); // シュンという効果音
+            this.load.audio('shun', 'mokkin.mp3');
         }
 
         function create() {
-            const heightRatio = 4 / 5; // 動物の高さの比率を変更
+            const heightRatio = 4 / 5;
             animalHeight = this.scale.height * heightRatio;
             animalWidth = animalHeight * (this.textures.get('rabbit_inai').getSourceImage().width / this.textures.get('rabbit_inai').getSourceImage().height);
 
@@ -69,7 +67,6 @@
             bear = createAnimal(this, 'bear', 'bear_inai');
             cat = createAnimal(this, 'cat', 'cat_inai');
 
-            // 最初のウサギにもアニメーションを追加
             rabbit.setScale(0);
             this.tweens.add({
                 targets: rabbit,
@@ -83,11 +80,17 @@
         }
 
         function update() {
-            // ゲームの更新処理
+            for (let sparkle of sparkles) {
+                sparkle.alpha -= 0.01;
+                if (sparkle.alpha <= 0) {
+                    sparkle.destroy();
+                    sparkles.splice(sparkles.indexOf(sparkle), 1);
+                }
+            }
         }
 
         function resize(gameSize) {
-            const heightRatio = 4 / 5; // 動物の高さの比率を変更
+            const heightRatio = 4 / 5;
             animalHeight = gameSize.height * heightRatio;
             animalWidth = animalHeight * (this.textures.get('rabbit_inai').getSourceImage().width / this.textures.get('rabbit_inai').getSourceImage().height);
 
@@ -100,6 +103,7 @@
             const animal = scene.add.sprite(scene.cameras.main.centerX, scene.cameras.main.centerY, texture)
                 .setInteractive()
                 .setDisplaySize(animalWidth, animalHeight)
+                .setDepth(1) // 動物を前面に設定
                 .setVisible(name === 'rabbit');
 
             animal.on('pointerdown', () => {
@@ -131,6 +135,7 @@
                 canTap = false;
                 animal.setTexture(name + '_ba');
                 baSound.play();
+                addSparkles(scene, animal);
                 baSound.on('complete', () => {
                     setTimeout(() => {
                         switchToNextAnimal(name, scene);
@@ -167,7 +172,7 @@
                     currentAnimal.setVisible(false);
                     sound.play();
                     nextAnimal.setScale(0);
-                    nextAnimal.setDisplaySize(animalWidth, animalHeight); // サイズをリセット
+                    nextAnimal.setDisplaySize(animalWidth, animalHeight);
                     nextAnimal.setVisible(true);
                     scene.tweens.add({
                         targets: nextAnimal,
@@ -179,10 +184,26 @@
                             canTap = true;
                         }
                     });
-                    scene.cameras.main.setBackgroundColor(newBackgroundColor); // 背景色を変更
+                    scene.cameras.main.setBackgroundColor(newBackgroundColor);
                     document.body.style.backgroundColor = newBackgroundColor;
                 }
             });
+        }
+
+        function addSparkles(scene, animal) {
+            for (let i = 0; i < 30; i++) {
+                let sparkle = scene.add.star(
+                    Phaser.Math.Between(animal.x - animal.displayWidth, animal.x + animal.displayWidth),
+                    Phaser.Math.Between(animal.y - animal.displayHeight, animal.y + animal.displayHeight),
+                    5, // 星の頂点数
+                    Phaser.Math.Between(2, 5), // 内半径
+                    Phaser.Math.Between(6, 10), // 外半径
+                    Phaser.Display.Color.RandomRGB(200, 255).color
+                );
+                sparkle.setDepth(0); // キラキラを背面に設定
+                sparkle.alpha = 1;
+                sparkles.push(sparkle);
+            }
         }
 
         window.addEventListener('resize', () => {
