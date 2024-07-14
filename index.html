@@ -17,7 +17,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color:#f6e174;
+            background-color: #d9b2f6;
             overflow: hidden;
         }
     </style>
@@ -29,7 +29,7 @@
             type: Phaser.AUTO,
             width: window.innerWidth,
             height: window.innerHeight,
-            backgroundColor: '#f6e174',
+            backgroundColor: '#d9b2f6', // 初期背景色を黄色に設定
             parent: 'phaser-example',
             scene: {
                 preload: preload,
@@ -143,20 +143,20 @@
             const shunSound = scene.sound.add('shun');
 
             if (current === 'rabbit') {
-                animateSwitch(rabbit, bear, scene, shunSound);
+                animateSwitch(rabbit, bear, scene, shunSound, 0xf6e174);
                 currentAnimal = 'bear';
             } else if (current === 'bear') {
-                animateSwitch(bear, cat, scene, shunSound);
+                animateSwitch(bear, cat, scene, shunSound, 0xf6b2b2);
                 currentAnimal = 'cat';
             } else if (current === 'cat') {
-                animateSwitch(cat, rabbit, scene, shunSound);
+                animateSwitch(cat, rabbit, scene, shunSound, 0xd9b2f6);
                 rabbit.setTexture('rabbit_inai');
                 tapCounts = { rabbit: 0, bear: 0, cat: 0 };
                 currentAnimal = 'rabbit';
             }
         }
 
-        function animateSwitch(currentAnimal, nextAnimal, scene, sound) {
+        function animateSwitch(currentAnimal, nextAnimal, scene, sound, newBackgroundColor) {
             scene.tweens.add({
                 targets: currentAnimal,
                 scaleX: 0,
@@ -179,6 +179,8 @@
                             canTap = true;
                         }
                     });
+                    scene.cameras.main.setBackgroundColor(newBackgroundColor); // 背景色を変更
+                    document.body.style.backgroundColor = newBackgroundColor;
                 }
             });
         }
