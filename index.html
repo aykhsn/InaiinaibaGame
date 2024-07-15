@@ -17,7 +17,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #d9b2f6;
+            background-color: #bbbbea;
             overflow: hidden;
         }
     </style>
@@ -28,7 +28,11 @@
             type: Phaser.AUTO,
             width: window.innerWidth,
             height: window.innerHeight,
-            backgroundColor: '#d9b2f6',
+            backgroundColor: '#bbbbea', // 淡い紫色
+            scale: {
+                mode: Phaser.Scale.FIT,
+                autoCenter: Phaser.Scale.CENTER_BOTH
+            },
             parent: 'phaser-example',
             scene: {
                 preload: preload,
@@ -43,7 +47,7 @@
         let tapCounts = { rabbit: 0, bear: 0, cat: 0 };
         let currentAnimal = 'rabbit';
         let canTap = true;
-        let animalHeight, animalWidth;
+        let animalHeight = 500, animalWidth = 500;
         let sparkles = [];
         let inaiinaiSound, baSound;
 
@@ -60,10 +64,6 @@
         }
 
         function create() {
-            const heightRatio = 4 / 5;
-            animalHeight = this.scale.height * heightRatio;
-            animalWidth = animalHeight * (this.textures.get('rabbit_inai').getSourceImage().width / this.textures.get('rabbit_inai').getSourceImage().height);
-
             rabbit = createAnimal(this, 'rabbit', 'rabbit_inai');
             bear = createAnimal(this, 'bear', 'bear_inai');
             cat = createAnimal(this, 'cat', 'cat_inai');
@@ -94,9 +94,8 @@
         }
 
         function resize(gameSize) {
-            const heightRatio = 4 / 5;
-            animalHeight = gameSize.height * heightRatio;
-            animalWidth = animalHeight * (this.textures.get('rabbit_inai').getSourceImage().width / this.textures.get('rabbit_inai').getSourceImage().height);
+            animalHeight = gameSize.height * 0.8;
+            animalWidth = animalHeight;
 
             resizeAnimal(rabbit);
             resizeAnimal(bear);
@@ -141,7 +140,7 @@
                 baSound.once('complete', () => {
                     setTimeout(() => {
                         switchToNextAnimal(name, scene);
-                    }, 2000);
+                    }, 1400);
                 });
             }
         }
@@ -150,15 +149,15 @@
             const shunSound = scene.sound.add('shun');
 
             if (current === 'rabbit') {
-                animateSwitch(rabbit, bear, scene, shunSound, 0xf6e174);
+                animateSwitch(rabbit, bear, scene, shunSound, 0xfbeda5);
                 currentAnimal = 'bear';
             } else if (current === 'bear') {
                 bear.setTexture('bear_inai'); // テクスチャをリセット
-                animateSwitch(bear, cat, scene, shunSound, 0xf6b2b2);
+                animateSwitch(bear, cat, scene, shunSound, 0xffc4c4);
                 currentAnimal = 'cat';
             } else if (current === 'cat') {
                 cat.setTexture('cat_inai'); // テクスチャをリセット
-                animateSwitch(cat, rabbit, scene, shunSound, 0xd9b2f6);
+                animateSwitch(cat, rabbit, scene, shunSound, 0xbbbbea); // 淡い紫色
                 rabbit.setTexture('rabbit_inai');
                 currentAnimal = 'rabbit';
             }
@@ -189,12 +188,25 @@
                         }
                     });
                     scene.cameras.main.setBackgroundColor(newBackgroundColor);
-                    document.body.style.backgroundColor = newBackgroundColor;
+                    document.body.style.backgroundColor = Phaser.Display.Color.IntegerToColor(newBackgroundColor).rgba;
                 }
             });
         }
 
         function addSparkles(scene, animal) {
+            const pastelColors = [
+                0xffc0cb, // Pink
+                0xffb6c1, // LightPink
+                0xffd700, // Gold
+                0xffe4e1, // MistyRose
+                0xdda0dd, // Plum
+                0xbbbbea, // Lavender
+                0xb0e0e6, // PowderBlue
+                0xadd8e6, // LightBlue
+                0x98fb98, // PaleGreen
+                0xf5deb3, // Wheat
+            ];
+
             for (let i = 0; i < 30; i++) {
                 let sparkle = scene.add.star(
                     Phaser.Math.Between(animal.x - animal.displayWidth, animal.x + animal.displayWidth),
@@ -202,7 +214,7 @@
                     5,
                     Phaser.Math.Between(6, 10),
                     Phaser.Math.Between(10, 14),
-                    Phaser.Display.Color.RandomRGB(200, 255).color
+                    Phaser.Utils.Array.GetRandom(pastelColors) // 可愛らしい色を選択
                 );
                 sparkle.setDepth(0);
                 sparkle.alpha = 1;
