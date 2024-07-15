@@ -5,8 +5,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>いないいないばあ｜こどもゲーム</title>
-    <link rel="icon" href="rabbit_ba.png">
-    <link rel="apple-touch-icon" href="rabbit_ba.png">
+    <link rel="icon" href="rabbit_ba.svg">
+    <link rel="apple-touch-icon" href="rabbit_ba.svg">
     <meta name="description" content="いないいないばあ！子供向けゲーム">
     <meta name="keywords" content="game, ゲーム, いないいないばあ、知育、子供向けゲーム">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
@@ -43,21 +43,24 @@
 
         const game = new Phaser.Game(config);
 
+        const animalSize = game.config.height * 8 / 10 > game.config.width ? game.config.width :  game.config.height * 2 / 3;
+
         let rabbit, bear, cat;
         let tapCounts = { rabbit: 0, bear: 0, cat: 0 };
         let currentAnimal = 'rabbit';
         let canTap = true;
-        let animalHeight = 500, animalWidth = 500;
+        let animalHeight = animalSize;
+        let animalWidth = (animalHeight * 8) / 10;
         let sparkles = [];
         let inaiinaiSound, baSound;
 
         function preload() {
-            this.load.image('rabbit_inai', 'rabbit_inai.png');
-            this.load.image('rabbit_ba', 'rabbit_ba.png');
-            this.load.image('bear_inai', 'bear_inai.png');
-            this.load.image('bear_ba', 'bear_ba.png');
-            this.load.image('cat_inai', 'cat_inai.png');
-            this.load.image('cat_ba', 'cat_ba.png');
+            this.load.svg('rabbit_inai', 'rabbit_inai.svg', { width: animalWidth, height: animalHeight });
+            this.load.svg('rabbit_ba', 'rabbit_ba.svg', { width: animalWidth, height: animalHeight });
+            this.load.svg('bear_inai', 'bear_inai.svg', { width: animalWidth, height: animalHeight });
+            this.load.svg('bear_ba', 'bear_ba.svg', { width: animalWidth, height: animalHeight });
+            this.load.svg('cat_inai', 'cat_inai.svg', { width: animalWidth, height: animalHeight });
+            this.load.svg('cat_ba', 'cat_ba.svg', { width: animalWidth, height: animalHeight });
             this.load.audio('inaiinai', 'inaiinai.mp3');
             this.load.audio('ba', 'ba.mp3');
             this.load.audio('shun', 'mokkin.mp3');
@@ -69,6 +72,7 @@
             cat = createAnimal(this, 'cat', 'cat_inai');
 
             rabbit.setScale(0);
+
             this.tweens.add({
                 targets: rabbit,
                 scaleX: 1,
@@ -94,8 +98,7 @@
         }
 
         function resize(gameSize) {
-            animalHeight = gameSize.height * 0.8;
-            animalWidth = animalHeight;
+            game.scale.resize(window.innerWidth, window.innerHeight);
 
             resizeAnimal(rabbit);
             resizeAnimal(bear);
