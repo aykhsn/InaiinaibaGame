@@ -43,7 +43,7 @@
 
         const game = new Phaser.Game(config);
 
-        const animalSize = game.config.height * 8 / 10 > game.config.width ? game.config.width :  game.config.height * 2 / 3;
+        const animalSize = game.config.height * 8 / 10 > game.config.width ? game.config.width : game.config.height * 2 / 3;
 
         let rabbit, bear, cat;
         let tapCounts = { rabbit: 0, bear: 0, cat: 0 };
@@ -98,8 +98,8 @@
         }
 
         function resize(gameSize) {
-            game.scale.resize(window.innerWidth, window.innerHeight);
-
+            animalHeight = gameSize.height / 2;
+            animalWidth = (animalHeight * 8) / 10;
             resizeAnimal(rabbit);
             resizeAnimal(bear);
             resizeAnimal(cat);
@@ -177,8 +177,7 @@
                 onComplete: () => {
                     currentAnimal.setVisible(false);
                     sound.play();
-                    nextAnimal.setScale(0);
-                    nextAnimal.setDisplaySize(animalWidth, animalHeight);
+                    nextAnimal.setScale(0); // 次の動物のスケールをリセット
                     nextAnimal.setVisible(true);
                     scene.tweens.add({
                         targets: nextAnimal,
@@ -212,8 +211,8 @@
 
             for (let i = 0; i < 30; i++) {
                 let sparkle = scene.add.star(
-                    Phaser.Math.Between(animal.x - animal.displayWidth, animal.x + animal.displayWidth),
-                    Phaser.Math.Between(animal.y - animal.displayHeight, animal.y + animal.displayHeight),
+                    Phaser.Math.Between(animal.x - animal.displayWidth / 2, animal.x + animal.displayWidth / 2),
+                    Phaser.Math.Between(animal.y - animal.displayHeight / 2, animal.y + animal.displayHeight / 2),
                     5,
                     Phaser.Math.Between(6, 10),
                     Phaser.Math.Between(10, 14),
@@ -227,7 +226,18 @@
 
         window.addEventListener('resize', () => {
             game.scale.resize(window.innerWidth, window.innerHeight);
+
+            resizeAnimals();
         });
+
+        function resizeAnimals() {
+            const animalSize = game.config.height * 8 / 10 > game.config.width ? game.config.width : game.config.height * 2 / 3;
+
+            let animalHeight = animalSize;
+            let animalWidth = (animalHeight * 8) / 10;
+            
+            animal.setDisplaySize(animalHeight, animalWidth);
+        }
     </script>
 </body>
 </html>
