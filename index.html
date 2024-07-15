@@ -45,6 +45,7 @@
         let canTap = true;
         let animalHeight, animalWidth;
         let sparkles = [];
+        let inaiinaiSound, baSound;
 
         function preload() {
             this.load.image('rabbit_inai', 'rabbit_inai.png');
@@ -76,6 +77,9 @@
                 ease: 'Bounce.easeOut'
             });
 
+            inaiinaiSound = this.sound.add('inaiinai');
+            baSound = this.sound.add('ba');
+
             this.scale.on('resize', resize, this);
         }
 
@@ -103,7 +107,7 @@
             const animal = scene.add.sprite(scene.cameras.main.centerX, scene.cameras.main.centerY, texture)
                 .setInteractive()
                 .setDisplaySize(animalWidth, animalHeight)
-                .setDepth(1) // 動物を前面に設定
+                .setDepth(1)
                 .setVisible(name === 'rabbit');
 
             animal.on('pointerdown', () => {
@@ -122,13 +126,11 @@
 
         function handleAnimalClick(name, animal, scene) {
             tapCounts[name]++;
-            const inaiinaiSound = scene.sound.add('inaiinai');
-            const baSound = scene.sound.add('ba');
 
             if (tapCounts[name] === 1) {
                 canTap = false;
                 inaiinaiSound.play();
-                inaiinaiSound.on('complete', () => {
+                inaiinaiSound.once('complete', () => {
                     canTap = true;
                 });
             } else if (tapCounts[name] === 2) {
@@ -136,7 +138,7 @@
                 animal.setTexture(name + '_ba');
                 baSound.play();
                 addSparkles(scene, animal);
-                baSound.on('complete', () => {
+                baSound.once('complete', () => {
                     setTimeout(() => {
                         switchToNextAnimal(name, scene);
                     }, 2000);
@@ -151,14 +153,16 @@
                 animateSwitch(rabbit, bear, scene, shunSound, 0xf6e174);
                 currentAnimal = 'bear';
             } else if (current === 'bear') {
+                bear.setTexture('bear_inai'); // テクスチャをリセット
                 animateSwitch(bear, cat, scene, shunSound, 0xf6b2b2);
                 currentAnimal = 'cat';
             } else if (current === 'cat') {
+                cat.setTexture('cat_inai'); // テクスチャをリセット
                 animateSwitch(cat, rabbit, scene, shunSound, 0xd9b2f6);
                 rabbit.setTexture('rabbit_inai');
-                tapCounts = { rabbit: 0, bear: 0, cat: 0 };
                 currentAnimal = 'rabbit';
             }
+            tapCounts[current] = 0; // タップカウントをリセット
         }
 
         function animateSwitch(currentAnimal, nextAnimal, scene, sound, newBackgroundColor) {
@@ -195,12 +199,12 @@
                 let sparkle = scene.add.star(
                     Phaser.Math.Between(animal.x - animal.displayWidth, animal.x + animal.displayWidth),
                     Phaser.Math.Between(animal.y - animal.displayHeight, animal.y + animal.displayHeight),
-                    5, // 星の頂点数
-                    Phaser.Math.Between(2, 5), // 内半径
-                    Phaser.Math.Between(6, 10), // 外半径
+                    5,
+                    Phaser.Math.Between(6, 10),
+                    Phaser.Math.Between(10, 14),
                     Phaser.Display.Color.RandomRGB(200, 255).color
                 );
-                sparkle.setDepth(0); // キラキラを背面に設定
+                sparkle.setDepth(0);
                 sparkle.alpha = 1;
                 sparkles.push(sparkle);
             }
