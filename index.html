@@ -43,14 +43,14 @@
 
         const game = new Phaser.Game(config);
 
-        const animalSize = game.config.height * 8 / 10 > game.config.width ? game.config.width : game.config.height * 2 / 3;
+        const animalSize = game.config.height * 8 / 10 > game.config.width ? game.config.width : game.config.height / 2;
 
         let rabbit, bear, cat;
         let tapCounts = { rabbit: 0, bear: 0, cat: 0 };
         let currentAnimal = 'rabbit';
         let canTap = true;
         let animalHeight = animalSize;
-        let animalWidth = (animalHeight * 8) / 10;
+        let animalWidth = (animalHeight * 7) / 10;
         let sparkles = [];
         let inaiinaiSound, baSound;
 
@@ -99,7 +99,7 @@
 
         function resize(gameSize) {
             animalHeight = gameSize.height / 2;
-            animalWidth = (animalHeight * 8) / 10;
+            animalWidth = (animalHeight * 7) / 10;
             resizeAnimal(rabbit);
             resizeAnimal(bear);
             resizeAnimal(cat);
@@ -216,7 +216,7 @@
                     5,
                     Phaser.Math.Between(6, 10),
                     Phaser.Math.Between(10, 14),
-                    Phaser.Utils.Array.GetRandom(pastelColors) // 可愛らしい色を選択
+                    Phaser.Utils.Array.GetRandom(pastelColors)
                 );
                 sparkle.setDepth(0);
                 sparkle.alpha = 1;
@@ -231,10 +231,10 @@
         });
 
         function resizeAnimals() {
-            const animalSize = game.config.height * 8 / 10 > game.config.width ? game.config.width : game.config.height * 2 / 3;
+            const animalSize = game.config.height * 8 / 10 > game.config.width ? game.config.width : game.config.height / 2;
 
             let animalHeight = animalSize;
-            let animalWidth = (animalHeight * 8) / 10;
+            let animalWidth = (animalHeight * 7) / 10;
             
             animal.setDisplaySize(animalHeight, animalWidth);
         }
