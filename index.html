@@ -4,10 +4,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>いないいないばあ｜こどもゲーム</title>
-    <link rel="icon" href="rabbit_ba.svg">
-    <link rel="apple-touch-icon" href="rabbit_ba.svg">
-    <meta name="description" content="いないいないばあ！子供向けゲーム">
+    <title>いないいないばあ｜ゲームでぴこぽ</title>
+    <meta name="robots" content="noindex" />
+    <meta property="og:url" content="../../games/inaiinaiba">
+    <meta property="og:type" content="game">
+    <meta property="og:image" content="../../wp-content/uploads/2024/07/kv_inaiinaiba.png">
+    <meta property="og:title" content="いないいないばあ">
+    <meta property="og:descripion" ctontent="赤ちゃん子ども向けの無料ミニゲームサイト"> 
+    <meta property="og:site_name" content="ゲームでぴこぽ" />
+    <link rel="icon" href="../../wp-content/uploads/2024/07/icon.png">
+    <link rel="apple-touch-icon" href="../../wp-content/uploads/2024/07/icon.png">
+    <link rel="apple-touch-icon-precomposed" href="../../wp-content/uploads/2024/07/icon.png">
+    <meta name="description" content="赤ちゃん子ども向けの無料ミニゲームサイト">
     <meta name="keywords" content="game, ゲーム, いないいないばあ、知育、子供向けゲーム">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
     <style>
@@ -55,15 +63,15 @@
         let inaiinaiSound, baSound;
 
         function preload() {
-            this.load.svg('rabbit_inai', 'rabbit_inai.svg', { width: animalWidth, height: animalHeight });
-            this.load.svg('rabbit_ba', 'rabbit_ba.svg', { width: animalWidth, height: animalHeight });
-            this.load.svg('bear_inai', 'bear_inai.svg', { width: animalWidth, height: animalHeight });
-            this.load.svg('bear_ba', 'bear_ba.svg', { width: animalWidth, height: animalHeight });
-            this.load.svg('cat_inai', 'cat_inai.svg', { width: animalWidth, height: animalHeight });
-            this.load.svg('cat_ba', 'cat_ba.svg', { width: animalWidth, height: animalHeight });
-            this.load.audio('inaiinai', 'inaiinai.mp3');
-            this.load.audio('ba', 'ba.mp3');
-            this.load.audio('shun', 'mokkin.mp3');
+            this.load.svg('rabbit_inai', 'assets/rabbit_inai.svg', { width: animalWidth, height: animalHeight });
+            this.load.svg('rabbit_ba', 'assets/rabbit_ba.svg', { width: animalWidth, height: animalHeight });
+            this.load.svg('bear_inai', 'assets/bear_inai.svg', { width: animalWidth, height: animalHeight });
+            this.load.svg('bear_ba', 'assets/bear_ba.svg', { width: animalWidth, height: animalHeight });
+            this.load.svg('cat_inai', 'assets/cat_inai.svg', { width: animalWidth, height: animalHeight });
+            this.load.svg('cat_ba', 'assets/cat_ba.svg', { width: animalWidth, height: animalHeight });
+            this.load.audio('inaiinai', 'assets/inaiinai.mp3');
+            this.load.audio('ba', 'assets/ba.mp3');
+            this.load.audio('shun', 'assets/mokkin.mp3');
         }
 
         function create() {
